@@ -307,6 +307,10 @@ def update_track_of_artist(artist_id):
     result = artist_controller.update_tracks_of_artist(artist_id)
     return jsonify(result)
 
+def getApp():
+    return app
+    
+
 if __name__ == "__main__":
     create_artists_tables()
     create_albums_tables()
