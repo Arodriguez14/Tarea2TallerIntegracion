@@ -1,5 +1,6 @@
 from app import app 
 from app import get_db
+from flask import Flask
 
 tables = [
     """CREATE TABLE IF NOT EXISTS artists(
