@@ -2,7 +2,7 @@ from flask import Flask, request, g, render_template, jsonify
 from flask_sqlalchemy import SQLAlchemy
 import config	
 import sqlite3
-import artist_controller
+from app import artist_controller
 from base64 import b64encode
 import json
 
@@ -318,7 +318,8 @@ if __name__ == "__main__":
     create_artists_tables()
     create_albums_tables()
     create_tracks_tables()
-    app.run()
+    app.run(debug=True)
+    #app.run()
 
 
 
