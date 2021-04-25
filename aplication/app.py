@@ -2,15 +2,12 @@ from flask import Flask, request, g, render_template, jsonify
 from flask_sqlalchemy import SQLAlchemy
 import config	
 import sqlite3
-from app import artist_controller
+import artist_controller
 from base64 import b64encode
 import json
 
 
 app = Flask(__name__)
-
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite://User.sqlite3'
 
 DATABASE = './database.db'
 
@@ -109,9 +106,9 @@ def insert_artist():
     if len(artist_id) > 22:
         artist_id = artist_id[:22]
     age = artist_details["age"]
-    albums = "https://tarea2-arodriguez14.herokuapp.com/artists/"+str(artist_id)+"/albums"
-    tracks = "https://tarea2-arodriguez14.herokuapp.com/artists/"+str(artist_id)+"/tracks"
-    selff = "https://tarea2-arodriguez14.herokuapp.com/artists/"+str(artist_id)
+    albums = "http://localhost:5000/artists/"+str(artist_id)+"/albums"
+    tracks = "http://localhost:5000/artists/"+str(artist_id)+"/tracks"
+    selff = "http://localhost:5000/artists/"+str(artist_id)
     result = artist_controller.insert_artist(artist_id, name, age, albums, tracks, selff)
 
     return jsonify(result)
@@ -144,9 +141,9 @@ def insert_albums(artist_id):
     if len(album_id) > 22:
         album_id = album_id[:22]
     genre = album_details["genre"]
-    artist = "https://tarea2-arodriguez14.herokuapp.com/artists/"+str(artist_id)
-    tracks = "https://tarea2-arodriguez14.herokuapp.com/albums/"+str(album_id)+"/tracks"
-    selff = "https://tarea2-arodriguez14.herokuapp.com/albums/"+str(album_id)
+    artist = "http://localhost:5000/artists/"+str(artist_id)
+    tracks = "http://localhost:5000/albums/"+str(album_id)+"/tracks"
+    selff = "http://localhost:5000/albums/"+str(album_id)
     result = artist_controller.insert_album(album_id, artist_id, name, genre, artist, tracks, selff)
     return jsonify(result)
 
@@ -209,9 +206,9 @@ def insert_tracks(album_id):
         track_id = track_id[:22]
     duration = track_details["duration"]
     times_played = 0
-    artist = "https://tarea2-arodriguez14.herokuapp.com/artists/"+str(artist_id)
-    album = "https://tarea2-arodriguez14.herokuapp.com/albums/"+str(album_id)
-    selff = "https://tarea2-arodriguez14.herokuapp.com/tracks/"+str(track_id)
+    artist = "http://localhost:5000/artists/"+str(artist_id)
+    album = "http://localhost:5000/albums/"+str(album_id)
+    selff = "http://localhost:5000/tracks/"+str(track_id)
     result = artist_controller.insert_track(track_id, album_id, artist_id, name, duration, times_played, artist, album, selff)
     return jsonify(result)
 
@@ -310,16 +307,11 @@ def update_track_of_artist(artist_id):
     result = artist_controller.update_tracks_of_artist(artist_id)
     return jsonify(result)
 
-def getApp():
-    return app
-
-
 if __name__ == "__main__":
     create_artists_tables()
     create_albums_tables()
     create_tracks_tables()
-    app.run(debug=True)
-    #app.run()
+    app.run()
 
 
 
