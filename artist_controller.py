@@ -1,6 +1,6 @@
 import sqlite3
 import json
-import Artist, Album, Track, db
+#import Artist, Album, Track, db
 
 def get_artists():
     artists = Artist.query.all()
