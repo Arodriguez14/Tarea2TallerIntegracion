@@ -1,32 +1,32 @@
-import sqlite3
-import json
+#import sqlite3
+#import json
 #import Artist, Album, Track, db
 
-def get_artists():
-    artists = Artist.query.all()
-    total = []
-    for elem in artists:
-        dicto_artist = {}
-        dicto_artist["name"] = elem.name
-        dicto_artist["age"] = elem.age
-        dicto_artist["albums"] = elem.albums
-        dicto_artist["tracks"] = elem.tracks
-        dicto_artist["self"] = elem.url
-        total.append(dicto_artist)
-    return json.dumps(total)
+# def get_artists():
+#     artists = Artist.query.all()
+#     total = []
+#     for elem in artists:
+#         dicto_artist = {}
+#         dicto_artist["name"] = elem.name
+#         dicto_artist["age"] = elem.age
+#         dicto_artist["albums"] = elem.albums
+#         dicto_artist["tracks"] = elem.tracks
+#         dicto_artist["self"] = elem.url
+#         total.append(dicto_artist)
+#     return json.dumps(total)
 
 
-def insert_artist(request):
-    artist_details = request.get_json()
-    name = artist_details["name"]
-    age = artist_details["age"]
-    new_artist = Artist(name, age)
-    print("artista creado")
-    db.session.add(new_artist)
-    db.session.commit()
-    lista = [{"id": new_artist.id, "name":new_artist.name, "age":new_artist.age, "albums":new_artist.albums, "tracks":new_artist.tracks, "self":new_artist.url}]
-    print("LISTA")
-    return lista
+# def insert_artist(request):
+#     artist_details = request.get_json()
+#     name = artist_details["name"]
+#     age = artist_details["age"]
+#     new_artist = Artist(name, age)
+#     print("artista creado")
+#     db.session.add(new_artist)
+#     db.session.commit()
+#     lista = [{"id": new_artist.id, "name":new_artist.name, "age":new_artist.age, "albums":new_artist.albums, "tracks":new_artist.tracks, "self":new_artist.url}]
+#     print("LISTA")
+#     return lista
 
 # def update_artist(artist_id, name, age, albums, tracks, selff):
 #     db = get_db()
