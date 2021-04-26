@@ -1,7 +1,7 @@
 from flask import Flask, request, g, render_template, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
-import artist_controller
+#import artist_controller
 from base64 import b64encode
 import json
 
@@ -106,11 +106,11 @@ db.create_all()
 
 @app.route('/artists', methods=["GET"])
 def get_artists():
-    return artist_controller.get_artists(),200
+    return get_artists_controller(),200
 
 @app.route("/artists", methods=["POST"])
 def insert_artist():
-    result = artist_controller.insert_artist(request)
+    result = insert_artist_controller(request)
     return json.dumps(result), 201
 
 # @app.route("/artists/<id>", methods=["DELETE"])
@@ -325,3 +325,29 @@ if __name__ == "__main__":
 #     result = artist_controller.update_artist(artist_id, name, age, albums, tracks, selff)
 #     print(jsonify(result))
 #     return jsonify(result)
+
+def get_artists_controller():
+    artists = Artist.query.all()
+    total = []
+    for elem in artists:
+        dicto_artist = {}
+        dicto_artist["name"] = elem.name
+        dicto_artist["age"] = elem.age
+        dicto_artist["albums"] = elem.albums
+        dicto_artist["tracks"] = elem.tracks
+        dicto_artist["self"] = elem.url
+        total.append(dicto_artist)
+    return json.dumps(total)
+
+
+def insert_artist_controller(request):
+    artist_details = request.get_json()
+    name = artist_details["name"]
+    age = artist_details["age"]
+    new_artist = Artist(name, age)
+    print("artista creado")
+    db.session.add(new_artist)
+    db.session.commit()
+    lista = [{"id": new_artist.id, "name":new_artist.name, "age":new_artist.age, "albums":new_artist.albums, "tracks":new_artist.tracks, "self":new_artist.url}]
+    print("LISTA")
+    return lista
