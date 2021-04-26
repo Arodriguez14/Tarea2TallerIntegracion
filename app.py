@@ -9,7 +9,8 @@ API_URL = 'http://localhost:5000'
 
 app = Flask(__name__)
 
-app.config['SQLALCHEMY_DATABASE_URI']='postgresql://localhost/tarea2'
+#app.config['SQLALCHEMY_DATABASE_URI']='postgresql://localhost/tarea2'
+app.config['SQLALCHEMY_DATABASE_URI']='postgresql://bqdysojcqwhkyn:8fd9468ae25e1a10f5fa49787ef633abb28f01c4cb3facaa6a9de0fb47028830@ec2-54-224-120-186.compute-1.amazonaws.com:5432/davh5fis0le6tg'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS']=False
 
 
