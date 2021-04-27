@@ -91,7 +91,7 @@ class Track(db.Model):
         track_id = b64encode(string.encode()).decode('utf-8')
         return track_id[:22]
 
-#db.create_all()
+db.create_all()
 
 #CONTROLLER
 
