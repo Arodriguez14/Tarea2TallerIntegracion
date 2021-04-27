@@ -362,16 +362,14 @@ def artists_method():
     if request.method == "GET":
         return get_artists_controller()
     elif request.method == "POST":
-        result = insert_artists_controller(request)
-        return json.dumps(result), 201
+        return insert_artists_controller(request)
 
 @app.route('/artists/<artist_id>/albums', methods=["GET", "POST"])
 def albums_method(artist_id):
     if request.method == "GET":
         return get_albums_controller_by_artist(request, artist_id)
     elif request.method == "POST":
-        result = insert_albums_controller(request, artist_id)
-        return json.dumps(result), 201
+        return insert_albums_controller(request, artist_id)
 
 @app.route('/albums/<album_id>/tracks', methods=["GET", "POST"])
 def tracks_method(album_id):
@@ -379,8 +377,7 @@ def tracks_method(album_id):
         print("ALBUM_ID,",album_id)
         return get_tracks_controller_by_album(request, album_id)
     elif request.method == "POST":
-        result = insert_tracks_controller(request, album_id)
-        return json.dumps(result), 201
+        return insert_tracks_controller(request, album_id)
 
 @app.route('/artists/<artist_id>/tracks', methods=["GET"])
 def tracks_of_artist(artist_id):   
