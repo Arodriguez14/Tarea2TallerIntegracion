@@ -5,7 +5,7 @@ from flask_marshmallow import Marshmallow
 from base64 import b64encode
 import json
 
-#API_URL = 'http://localhost:5000'
+#eexAPI_URL = 'http://localhost:5000'
 API_URL = 'https://tarea2-arodriguez14.herokuapp.com'
 
 app = Flask(__name__)
