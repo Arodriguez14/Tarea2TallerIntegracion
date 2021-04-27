@@ -120,7 +120,7 @@ def insert_artists_controller(request):
     if possible_artist is None:
         db.session.add(new_artist)
         db.session.commit()
-        lista = [{"id": new_artist.id, "name":new_artist.name, "age":new_artist.age, "albums":new_artist.albums, "tracks":new_artist.tracks, "self":new_artist.url}]
+        lista = {"id": new_artist.id, "name":new_artist.name, "age":new_artist.age, "albums":new_artist.albums, "tracks":new_artist.tracks, "self":new_artist.url}
         return json.dumps(lista), 201
     else:
         return '', 409
@@ -153,7 +153,7 @@ def insert_albums_controller(request, artist_id):
     if possible_album is None:
         db.session.add(new_album)
         db.session.commit()
-        lista = [{"id": new_album.id, "name":new_album.name, "genre":new_album.genre, "artist":new_album.artist, "tracks":new_album.tracks, "self":new_album.url}]
+        lista = {"id": new_album.id, "name":new_album.name, "genre":new_album.genre, "artist":new_album.artist, "tracks":new_album.tracks, "self":new_album.url}
         return json.dumps(lista), 201
     else:
         return '', 409
@@ -187,7 +187,7 @@ def insert_tracks_controller(request, album_id):
     if possible_track is None:
         db.session.add(new_track)
         db.session.commit()
-        lista = [{"id": new_track.id, "name":new_track.name, "duration":new_track.duration, "times_played":new_track.times_played, "artist":new_track.artist, "album":new_track.album, "self":new_track.url}]
+        lista = {"id": new_track.id, "name":new_track.name, "duration":new_track.duration, "times_played":new_track.times_played, "artist":new_track.artist, "album":new_track.album, "self":new_track.url}
         return json.dumps(lista), 201
     else:
         return '', 409
@@ -229,8 +229,8 @@ def get_tracks_controller_by_album(request, album_id):
 
 def get_tracks_controller_by_artist(request, artist_id):
     possible_artist = Artist.query.get(artist_id)
-    if possible_artist is None:
-        return 404
+    if not possible_artist:
+        return '', 404
     total = []
     all_tracks = Track.query.all()
     for track in all_tracks:
@@ -345,7 +345,7 @@ def play_tracks_of_album_controller(album_id):
 
 def play_tracks_of_artist_controller(artist_id):
     artist = Artist.query.get(artist_id)
-    if artist is None:
+    if not artist:
         return '', 404
     all_tracks = Track.query.all()
     for track in all_tracks:
