@@ -121,7 +121,7 @@ def insert_artists_controller(request):
         db.session.add(new_artist)
         db.session.commit()
         lista = [{"id": new_artist.id, "name":new_artist.name, "age":new_artist.age, "albums":new_artist.albums, "tracks":new_artist.tracks, "self":new_artist.url}]
-        return lista, 201
+        return json.dumps(lista), 201
     else:
         return '', 409
 
@@ -154,7 +154,7 @@ def insert_albums_controller(request, artist_id):
         db.session.add(new_album)
         db.session.commit()
         lista = [{"id": new_album.id, "name":new_album.name, "genre":new_album.genre, "artist":new_album.artist, "tracks":new_album.tracks, "self":new_album.url}]
-        return lista, 201
+        return json.dumps(lista), 201
     else:
         return '', 409
 
@@ -188,7 +188,7 @@ def insert_tracks_controller(request, album_id):
         db.session.add(new_track)
         db.session.commit()
         lista = [{"id": new_track.id, "name":new_track.name, "duration":new_track.duration, "times_played":new_track.times_played, "artist":new_track.artist, "album":new_track.album, "self":new_track.url}]
-        return lista, 201
+        return json.dumps(lista), 201
     else:
         return '', 409
 
@@ -249,44 +249,44 @@ def get_artist_by_id_controller(artist_id):
     artist = Artist.query.get(artist_id)
     if artist is None:
         return '', 404
-    total = []
+    #total = []
     dicto_artist = {}
     dicto_artist["name"] = artist.name
     dicto_artist["age"] = artist.age
     dicto_artist["albums"] = artist.albums
     dicto_artist["tracks"] = artist.tracks
     dicto_artist["self"] = artist.url
-    total.append(dicto_artist)
-    return json.dumps(total), 200
+    #total.append(dicto_artist)
+    return json.dumps(dicto_artist), 200
 
 def get_album_by_id_controller(album_id):
     album = Album.query.get(album_id)
     if album is None:
         return '', 404
     dicto_album = {}
-    total = []
+    #total = []
     dicto_album["name"] = album.name
     dicto_album["genre"] = album.genre
     dicto_album["artist"] = album.artist
     dicto_album["tracks"] = album.tracks
     dicto_album["self"] = album.url
-    total.append(dicto_album)
-    return json.dumps(total), 200
+    #total.append(dicto_album)
+    return json.dumps(dicto_album), 200
 
 def get_track_by_id_controller(track_id):
     track = Track.query.get(track_id)
     if track is None:
         return '', 404
     dicto_track = {}
-    total = []
+    #total = []
     dicto_track["name"] = track.name
     dicto_track["duration"] = track.duration
     dicto_track["times_played"] = track.times_played
     dicto_track["artist"] = track.artist
     dicto_track["album"] = track.album
     dicto_track["self"] = track.url
-    total.append(dicto_track)
-    return json.dumps(total), 200
+    #total.append(dicto_track)
+    return json.dumps(dicto_track), 200
 
 def delete_track_controller(track_id):
     track = Track.query.get(track_id)
