@@ -348,13 +348,12 @@ def play_tracks_of_album_controller(album_id):
 
 def play_tracks_of_artist_controller(artist_id):
     artist = Artist.query.get(artist_id)
-    if not artist:
+    if artist is None:
         return '', 404
-
     all_tracks = Track.query.all()
-    tracks_filter = [track for track in all_tracks if '%s/artists/%s' % (API_URL, artist_id) == track.artist]
-    for track in tracks_filter:
-        track.times_played += 1
+    for track in all_tracks:
+        if track.artist == API_URL + "/artists/" + artist_id:
+            track.times_played += 1
     db.session.commit()
     return '', 200
 
