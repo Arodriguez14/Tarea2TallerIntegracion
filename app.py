@@ -6,30 +6,19 @@ from base64 import b64encode
 import json
 
 API_URL = 'http://localhost:5000'
+#API_URL = 'https://tarea2-arodriguez14.herokuapp.com'
 
 app = Flask(__name__)
 
-#app.config['SQLALCHEMY_DATABASE_URI']='postgresql://localhost/tarea2'
-app.config['SQLALCHEMY_DATABASE_URI']='postgresql://bqdysojcqwhkyn:8fd9468ae25e1a10f5fa49787ef633abb28f01c4cb3facaa6a9de0fb47028830@ec2-54-224-120-186.compute-1.amazonaws.com:5432/davh5fis0le6tg'
+app.config['SQLALCHEMY_DATABASE_URI']='postgresql://localhost/tarea2'
+#app.config['SQLALCHEMY_DATABASE_URI']='postgresql://bqdysojcqwhkyn:8fd9468ae25e1a10f5fa49787ef633abb28f01c4cb3facaa6a9de0fb47028830@ec2-54-224-120-186.compute-1.amazonaws.com:5432/davh5fis0le6tg'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS']=False
 
 
 db = SQLAlchemy(app)
 ma = Marshmallow(app)
 
-class ArtistSchema(ma.Schema):
-  class Meta:
-    fields = ('name', 'age', 'albums', 'tracks', 'url')
-
-class AlbumSchema(ma.Schema):
-  class Meta:
-    fields = ('name', 'genre', 'artist', 'tracks', 'url')
-
-class TrackSchema(ma.Schema):
-  class Meta:
-    fields = ('name', 'duration', 'times_played', 'artist', 'album', 'url')
-
-
+#MODELOS
 class Artist(db.Model):
     __tablename__ = 'artist'
     id = db.Column(db.String(22), primary_key=True)
@@ -65,6 +54,7 @@ class Album(db.Model):
         self.id = self.get_id(name, artist_id)
         self.name = name
         self.genre = genre
+        self.artist_id = artist_id
         self.artist = API_URL + "/artists/" + artist_id 
         self.tracks = API_URL + "/albums/"+ self.id + "/tracks" 
         self.url = API_URL + "/albums/" + self.id
@@ -88,6 +78,7 @@ class Track(db.Model):
     def __init__(self, name, duration, album_id):
         self.id = self.get_id(name, album_id)
         self.name = name
+        self.album_id = album_id
         self.duration = float(duration)
         self.times_played = 0
         self.artist = Album.query.get(album_id).artist
@@ -101,230 +92,7 @@ class Track(db.Model):
 
 db.create_all()
 
-
-
-
-@app.route('/artists', methods=["GET"])
-def get_artists():
-    return get_artists_controller(),200
-
-@app.route("/artists", methods=["POST"])
-def insert_artist():
-    result = insert_artist_controller(request)
-    return json.dumps(result), 201
-
-# @app.route("/artists/<id>", methods=["DELETE"])
-# def delete_artist(id):
-#     result = artist_controller.delete_artist(id)
-#     return jsonify(result)
-
-# @app.route("/artists/<artist_id>", methods=["GET"])
-# def get_artist_by_id(artist_id):
-#     artist = artist_controller.get_by_id(artist_id)
-#     total = []
-#     dicto_artist = {}
-#     dicto_artist["id"] = artist[0]
-#     dicto_artist["age"] = artist[2]
-#     dicto_artist["name"] = artist[1]
-#     dicto_artist["albums"] = artist[3]
-#     dicto_artist["tracks"] = artist[4]
-#     dicto_artist["self"] = artist[5]
-#     total.append(dicto_artist)
-#     return jsonify(total)
-
-# @app.route("/artists/<artist_id>/albums", methods=["POST"])
-# def insert_albums(artist_id):
-#     album_details = request.get_json()
-#     name = album_details["name"]
-#     string = str(name + ":" + artist_id)
-#     album_id = b64encode(string.encode()).decode('utf-8')
-#     if len(album_id) > 22:
-#         album_id = album_id[:22]
-#     genre = album_details["genre"]
-#     artist = "http://localhost:5000/artists/"+str(artist_id)
-#     tracks = "http://localhost:5000/albums/"+str(album_id)+"/tracks"
-#     selff = "http://localhost:5000/albums/"+str(album_id)
-#     result = artist_controller.insert_album(album_id, artist_id, name, genre, artist, tracks, selff)
-#     return jsonify(result)
-
-# @app.route('/albums', methods=["GET"])
-# def get_albums():
-#     albums = artist_controller.get_albums()
-#     total = []
-#     for elem in albums:
-#         dicto_album = {}
-#         dicto_album["id"] = elem[0]
-#         dicto_album["artist_id"] = elem[1]
-#         dicto_album["name"] = elem[2]
-#         dicto_album["genre"] = elem[3]
-#         dicto_album["artist"] = elem[4]
-#         dicto_album["tracks"] = elem[5]
-#         dicto_album["self"] = elem[6]
-#         total.append(dicto_album)
-#     return jsonify(total)
-
-# @app.route("/albums/<album_id>", methods=["GET"])
-# def get_album_by_id(album_id):
-#     album = artist_controller.get_album_by_id(album_id)
-#     total = []
-#     dicto = {}
-#     dicto["id"] = album[0]
-#     dicto["artist_id"] = album[1]
-#     dicto["age"] = album[2]
-#     dicto["genre"] = album[3]
-#     dicto["artist"] = album[4]
-#     dicto["tracks"] = album[5]
-#     dicto["self"] = album[6]
-#     total.append(dicto)
-#     return jsonify(total)
-
-# @app.route("/artists/<artist_id>/albums", methods=["GET"])
-# def get_albums_of_artists(artist_id):
-#     albums = artist_controller.get_albums_of_artists(artist_id)
-#     total = []
-#     for elem in albums:
-#         dicto = {}
-#         dicto["id"] = elem[0]
-#         dicto["artist_id"] = elem[1]
-#         dicto["name"] = elem[2]
-#         dicto["genre"] = elem[3]
-#         dicto["artist"] = elem[4]
-#         dicto["tracks"] = elem[5]
-#         dicto["self"] = elem[6]
-#         total.append(dicto)
-#     return jsonify(total)
-
-# @app.route("/albums/<album_id>/tracks", methods=["POST"])
-# def insert_tracks(album_id):
-#     artist_id = artist_controller.get_artist_id_for_track(album_id)[0]
-#     print(artist_id)
-#     track_details = request.get_json()
-#     name = track_details["name"]
-#     string = str(name + ":" + album_id)
-#     track_id = b64encode(string.encode()).decode('utf-8')
-#     if len(track_id) > 22:
-#         track_id = track_id[:22]
-#     duration = track_details["duration"]
-#     times_played = 0
-#     artist = "http://localhost:5000/artists/"+str(artist_id)
-#     album = "http://localhost:5000/albums/"+str(album_id)
-#     selff = "http://localhost:5000/tracks/"+str(track_id)
-#     result = artist_controller.insert_track(track_id, album_id, artist_id, name, duration, times_played, artist, album, selff)
-#     return jsonify(result)
-
-# @app.route('/tracks', methods=["GET"])
-# def get_tracks():
-#     tracks = artist_controller.get_tracks()
-#     total = []
-#     for elem in tracks:
-#         dicto = {}
-#         dicto["id"] = elem[0]
-#         dicto["album_id"] = elem[1]
-#         dicto["name"] = elem[2]
-#         dicto["duration"] = elem[3]
-#         dicto["times_played"] = elem[4]
-#         dicto["artist"] = elem[5]
-#         dicto["album"] = elem[6]
-#         dicto["self"] = elem[7]
-#         total.append(dicto)
-#     return jsonify(total)
-
-# @app.route('/albums/<album_id>/tracks', methods=["GET"])
-# def get_tracks_of_album(album_id):
-#     tracks = artist_controller.get_tracks_of_album(album_id)
-#     total = []
-#     print(type(tracks))
-#     for elem in tracks:
-#         dicto = {}
-#         dicto["id"] = elem[0]
-#         dicto["album_id"] = album_id
-#         dicto["name"] = elem[2]
-#         dicto["duration"] = elem[3]
-#         dicto["times_played"] = elem[4]
-#         dicto["artist"] = elem[5]
-#         dicto["album"] = elem[6]
-#         dicto["self"] = elem[7]
-#         total.append(dicto)
-#     return jsonify(total)
-
-# @app.route("/tracks/<track_id>", methods=["GET"])
-# def get_track_by_id(track_id):
-#     track = artist_controller.get_track_by_id(track_id)
-#     total = []
-#     dicto = {}
-#     dicto["id"] = track[0]
-#     dicto["album_id"] = track[1]
-#     dicto["name"] = track[2]
-#     dicto["duration"] = track[3]
-#     dicto["times_played"] = track[4]
-#     dicto["artist"] = track[5]
-#     dicto["album"] = track[6]
-#     dicto["self"] = track[7]
-#     total.append(dicto)
-#     return jsonify(total)
-
-# @app.route('/artists/<artist_id>/tracks', methods=["GET"])
-# def get_tracks_of_artist(artist_id):
-#     tracks = artist_controller.get_tracks_of_artist(artist_id)
-#     total = []
-#     print(type(tracks))
-#     for elem in tracks:
-#         dicto = {}
-#         dicto["id"] = elem[0]
-#         dicto["album_id"] = elem[1]
-#         dicto["name"] = elem[2]
-#         dicto["duration"] = elem[3]
-#         dicto["times_played"] = elem[4]
-#         dicto["artist"] = elem[5]
-#         dicto["album"] = elem[6]
-#         dicto["self"] = elem[7]
-#         total.append(dicto)
-#     return jsonify(total)
-
-# @app.route("/albums/<album_id>", methods=["DELETE"])
-# def delete_album(album_id):
-#     result = artist_controller.delete_albums(album_id)
-#     return jsonify(result)
-
-# @app.route("/tracks/<track_id>", methods=["DELETE"])
-# def delete_track(track_id):
-#     result = artist_controller.delete_tracks(track_id)
-#     return jsonify(result)
-
-# @app.route("/tracks/<track_id>/play", methods=["PUT"])
-# def update_track(track_id):
-#     result = artist_controller.update_tracks(track_id)
-#     print(result)
-#     return jsonify(result)
-
-# @app.route("/albums/<album_id>/tracks/play", methods=["PUT"])
-# def update_track_of_album(album_id):
-#     result = artist_controller.update_tracks_of_album(album_id)
-#     return jsonify(result)
-
-# @app.route("/artists/<artist_id>/albums/play", methods=["PUT"])
-# def update_track_of_artist(artist_id):
-#     result = artist_controller.update_tracks_of_artist(artist_id)
-#     return jsonify(result)
-
-if __name__ == "__main__":
-    app.run()
-
-
-
-
-# @app.route("/artist", methods=["PUT"])
-# def update_artist():
-#     artist_details = request.get_json()
-#     name = artist_details["name"]
-#     artist_id = b64encode(name.encode()).decode('utf-8')
-#     age = artist_details["age"]
-#     albums = artist_details["albums"]
-#     tracks = artist_details["tracks"]
-#     selff = artist_details["self"]
-#     result = artist_controller.update_artist(artist_id, name, age, albums, tracks, selff)
-#     print(jsonify(result))
-#     return jsonify(result)
+#CONTROLLER
 
 def get_artists_controller():
     artists = Artist.query.all()
@@ -337,17 +105,280 @@ def get_artists_controller():
         dicto_artist["tracks"] = elem.tracks
         dicto_artist["self"] = elem.url
         total.append(dicto_artist)
-    return json.dumps(total)
+    return json.dumps(total), 200
 
-
-def insert_artist_controller(request):
+def insert_artists_controller(request):
     artist_details = request.get_json()
     name = artist_details["name"]
     age = artist_details["age"]
     new_artist = Artist(name, age)
-    print("artista creado")
     db.session.add(new_artist)
     db.session.commit()
     lista = [{"id": new_artist.id, "name":new_artist.name, "age":new_artist.age, "albums":new_artist.albums, "tracks":new_artist.tracks, "self":new_artist.url}]
-    print("LISTA")
-    return lista
+    return lista, 201
+
+def get_albums_controller():
+    albums = Album.query.all()
+    total = []
+    for elem in albums:
+        dicto_album = {}
+        dicto_album["name"] = elem.name
+        dicto_album["genre"] = elem.genre
+        dicto_album["artist"] = elem.artist
+        dicto_album["tracks"] = elem.tracks
+        dicto_album["self"] = elem.url
+        total.append(dicto_album)
+    return json.dumps(total), 200
+
+def insert_albums_controller(request, artist_id):
+    album_details = request.get_json()
+    name = album_details["name"]
+    genre = album_details["genre"]
+    new_album = Album(name, genre, artist_id)
+    db.session.add(new_album)
+    db.session.commit()
+    lista = [{"id": new_album.id, "name":new_album.name, "genre":new_album.genre, "artist":new_album.artist, "tracks":new_album.tracks, "self":new_album.url}]
+    print("lista", lista)
+    return lista, 201
+
+def get_tracks_controller():
+    tracks = Track.query.all()
+    total = []
+    for elem in tracks:
+        dicto_track = {}
+        dicto_track["name"] = elem.name
+        dicto_track["duration"] = elem.duration
+        dicto_track["times_played"] = elem.times_played
+        dicto_track["artist"] = elem.artist
+        dicto_track["album"] = elem.album
+        dicto_track["self"] = elem.url
+        total.append(dicto_track)
+    return json.dumps(total), 200
+
+def insert_tracks_controller(request, album_id):
+    track_details = request.get_json()
+    name = track_details["name"]
+    duration = track_details["duration"]
+    new_track = Track(name, duration, album_id)
+    db.session.add(new_track)
+    db.session.commit()
+    lista = [{"id": new_track.id, "name":new_track.name, "duration":new_track.duration, "times_played":new_track.times_played, "artist":new_track.artist, "album":new_track.album, "self":new_track.url}]
+    return lista, 201
+
+def get_albums_controller_by_artist(request, artist_id):
+    #possible_artist = Artist.query.filter_by(id=artist_id)
+    total = []
+    all_albums = Album.query.all()
+    for album in all_albums:
+        if album.artist == API_URL + "/artists/" + artist_id:
+            dicto_album = {}
+            dicto_album["name"] = album.name
+            dicto_album["genre"] = album.genre
+            dicto_album["artist"] = album.artist
+            dicto_album["tracks"] = album.tracks
+            dicto_album["self"] = album.url
+            total.append(dicto_album)
+    return json.dumps(total), 200   
+
+def get_tracks_controller_by_album(request, album_id):
+    #if not Album.query.filter_by(id=album_id):
+    #    return 404
+    total = []
+    all_tracks = Track.query.all()
+    for track in all_tracks:
+        if track.album == API_URL + "/albums/" + album_id:
+            dicto_track = {}
+            dicto_track["name"] = track.name
+            dicto_track["duration"] = track.duration
+            dicto_track["times_played"] = track.times_played
+            dicto_track["artist"] = track.artist
+            dicto_track["album"] = track.album
+            dicto_track["self"] = track.url
+            total.append(dicto_track)
+    return json.dumps(total), 200
+
+def get_tracks_controller_by_artist(request, artist_id):
+    #if not Album.query.filter_by(id=album_id):
+    #    return 404
+    total = []
+    all_tracks = Track.query.all()
+    for track in all_tracks:
+        if track.artist == API_URL + "/artists/" + artist_id:
+            dicto_track = {}
+            dicto_track["name"] = track.name
+            dicto_track["duration"] = track.duration
+            dicto_track["times_played"] = track.times_played
+            dicto_track["artist"] = track.artist
+            dicto_track["album"] = track.album
+            dicto_track["self"] = track.url
+            total.append(dicto_track)
+    return json.dumps(total), 200
+
+def get_artist_by_id_controller(artist_id):
+    artist = Artist.query.get(artist_id)
+    total = []
+    dicto_artist = {}
+    dicto_artist["name"] = artist.name
+    dicto_artist["age"] = artist.age
+    dicto_artist["albums"] = artist.albums
+    dicto_artist["tracks"] = artist.tracks
+    dicto_artist["self"] = artist.url
+    total.append(dicto_artist)
+    return json.dumps(total), 200
+
+def get_album_by_id_controller(album_id):
+    album = Album.query.get(album_id)
+    dicto_album = {}
+    total = []
+    dicto_album["name"] = album.name
+    dicto_album["genre"] = album.genre
+    dicto_album["artist"] = album.artist
+    dicto_album["tracks"] = album.tracks
+    dicto_album["self"] = album.url
+    total.append(dicto_album)
+    return json.dumps(total), 200
+
+def get_track_by_id_controller(track_id):
+    track = Track.query.get(track_id)
+    dicto_track = {}
+    total = []
+    dicto_track["name"] = track.name
+    dicto_track["duration"] = track.duration
+    dicto_track["times_played"] = track.times_played
+    dicto_track["artist"] = track.artist
+    dicto_track["album"] = track.album
+    dicto_track["self"] = track.url
+    total.append(dicto_track)
+    return json.dumps(total), 200
+
+def delete_track_controller(track_id):
+    track = Track.query.get(track_id)
+    db.session.delete(track)
+    db.session.commit()
+    return '', 204
+
+def delete_album_controller(album_id):
+    album = Album.query.get(album_id)
+    db.session.delete(album)
+    all_tracks = Track.query.all()
+    for track in all_tracks:
+        if track.album == API_URL + "/albums/" + album_id:
+            db.session.delete(track)
+    db.session.commit()
+    return '', 204
+
+def delete_artist_controller(artist_id):
+    artist = Artist.query.get(artist_id)
+    db.session.delete(artist)
+    all_tracks = Track.query.all()
+    all_albums = Album.query.all()
+    for track in all_tracks:
+        if track.artist == API_URL + "/artists/" + artist_id:
+            db.session.delete(track)
+    for album in all_albums:
+        if album.artist == API_URL + "/artists/" + artist_id:
+            db.session.delete(album)
+    db.session.commit()
+    return '', 204
+
+def play_track_controller(track_id):
+    track = Track.query.get(track_id)
+    track.times_played += 1
+    db.session.commit()
+    return '', 200
+
+def play_tracks_of_album_controller(album_id):
+    #album = Album.query.get(album_id)
+    all_tracks = Track.query.all()
+    for track in all_tracks:
+        if track.album == API_URL + "/albums/" + album_id:
+            track.times_played += 1
+    db.session.commit()
+    return '', 200
+
+def play_tracks_of_artist_controller(artist_id):
+    #artist = Artist.query.get(artist_id)
+    all_tracks = Track.query.all()
+    for track in all_tracks:
+        if track.artist == API_URL + "/artists/" + artist_id:
+            track.times_played += 1
+    db.session.commit()
+    return '', 200
+
+
+#RUTAS
+
+@app.route('/artists', methods=["GET", "POST"])
+def artists_method():
+    if request.method == "GET":
+        return get_artists_controller()
+    elif request.method == "POST":
+        result = insert_artists_controller(request)
+        return json.dumps(result), 201
+
+@app.route('/artists/<artist_id>/albums', methods=["GET", "POST"])
+def albums_method(artist_id):
+    if request.method == "GET":
+        return get_albums_controller_by_artist(request, artist_id)
+    elif request.method == "POST":
+        result = insert_albums_controller(request, artist_id)
+        return json.dumps(result), 201
+
+@app.route('/albums/<album_id>/tracks', methods=["GET", "POST"])
+def tracks_method(album_id):
+    if request.method == "GET":
+        print("ALBUM_ID,",album_id)
+        return get_tracks_controller_by_album(request, album_id)
+    elif request.method == "POST":
+        result = insert_tracks_controller(request, album_id)
+        return json.dumps(result), 201
+
+@app.route('/artists/<artist_id>/tracks', methods=["GET"])
+def tracks_of_artist(artist_id):   
+    return get_tracks_controller_by_artist(request, artist_id)
+
+@app.route('/albums', methods=["GET"])
+def get_albums():
+    return get_albums_controller()
+
+@app.route('/tracks', methods=["GET"])
+def get_tracks():
+    return get_tracks_controller()
+
+@app.route('/artists/<artist_id>', methods=["GET", "DELETE"])
+def get_artist_by_id(artist_id):
+    if request.method == "GET":
+        return get_artist_by_id_controller(artist_id)
+    elif request.method == "DELETE":
+        return delete_artist_controller(artist_id)
+
+@app.route('/albums/<album_id>', methods=["GET", "DELETE"])
+def get_aalbum_by_id(album_id):
+    if request.method == "GET":
+        return get_album_by_id_controller(album_id)
+    elif request.method == "DELETE":
+        return delete_album_controller(album_id)
+
+@app.route('/tracks/<track_id>', methods=["GET", "DELETE"])
+def get_track_by_id(track_id):
+    if request.method == "GET":
+        return get_track_by_id_controller(track_id)
+    elif request.method == "DELETE":
+        return delete_track_controller(track_id)
+
+@app.route('/tracks/<track_id>/play', methods=["PUT"])
+def play_track(track_id):
+    return play_track_controller(track_id)
+
+@app.route('/albums/<album_id>/tracks/play', methods=["PUT"])
+def play_tracks_of_album(album_id):
+    return play_tracks_of_album_controller(album_id)
+
+@app.route('/artists/<artist_id>/tracks/play', methods=["PUT"])
+def play_track_of_artist(artist_id):
+    return play_tracks_of_artist_controller(artist_id)
+
+
+if __name__ == "__main__":
+    app.run()
+
