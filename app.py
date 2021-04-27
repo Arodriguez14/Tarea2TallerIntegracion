@@ -5,13 +5,13 @@ from flask_marshmallow import Marshmallow
 from base64 import b64encode
 import json
 
-#API_URL = 'http://localhost:5000'
-API_URL = 'https://tarea2-arodriguez14.herokuapp.com'
+API_URL = 'http://localhost:5000'
+#API_URL = 'https://tarea2-arodriguez14.herokuapp.com'
 
 app = Flask(__name__)
 
-#app.config['SQLALCHEMY_DATABASE_URI']='postgresql://localhost/tarea2'
-app.config['SQLALCHEMY_DATABASE_URI']='postgresql://hwxdmseprrvfru:0e35e56ac4b45322e1afc4172e94f476a8947d4c6417eecdf7094c4ec2b5ab58@ec2-54-152-185-191.compute-1.amazonaws.com:5432/dadkecbviif2h3'
+app.config['SQLALCHEMY_DATABASE_URI']='postgresql://localhost/tarea2'
+#app.config['SQLALCHEMY_DATABASE_URI']='postgresql://hwxdmseprrvfru:0e35e56ac4b45322e1afc4172e94f476a8947d4c6417eecdf7094c4ec2b5ab58@ec2-54-152-185-191.compute-1.amazonaws.com:5432/dadkecbviif2h3'
 #####app.config['SQLALCHEMY_DATABASE_URI']='postgresql://bqdysojcqwhkyn:8fd9468ae25e1a10f5fa49787ef633abb28f01c4cb3facaa6a9de0fb47028830@ec2-54-224-120-186.compute-1.amazonaws.com:5432/davh5fis0le6tg'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS']=False
 
@@ -91,7 +91,7 @@ class Track(db.Model):
         track_id = b64encode(string.encode()).decode('utf-8')
         return track_id[:22]
 
-db.create_all()
+#db.create_all()
 
 #CONTROLLER
 
@@ -347,17 +347,22 @@ def play_tracks_of_album_controller(album_id):
     return '', 200
 
 def play_tracks_of_artist_controller(artist_id):
+    print("entre a la funcion")
     artist = Artist.query.get(artist_id)
-    if artist:
+    print(artist, "artista")
+    if artist is None:
+        print("ES NONE")
+        return '', 404
+    else:
+        print("entre al else")
         all_tracks = Track.query.all()
+        print(all_tracks, "tracks")
         for track in all_tracks:
             if track.artist == API_URL + "/artists/" + artist_id:
                 track.times_played += 1
+                print("SUME 1")
         db.session.commit()
         return '', 200
-    else:
-        return '', 404
-
 
 #RUTAS
 
